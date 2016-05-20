@@ -1,0 +1,6 @@
+#pragma once
+
+#define LAYER_HEIGHT_WEATHER  40
+#define LAYER_HEIGHT_TIME     115 //90
+#define LAYER_HEIGHT_DATE     22
+#define LAYER_HEIGHT_BATTERY  10

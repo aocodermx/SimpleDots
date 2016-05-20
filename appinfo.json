@@ -1,0 +1,19 @@
+{
+  "uuid": "b149d21c-0f9c-49ce-b76b-55b23dee37cf",
+  "shortName": "SimpleDots",
+  "longName": "SimpleDots",
+  "companyName": "aocodermx",
+  "versionLabel": "1.0",
+  "versionCode": 1,
+  "sdkVersion": "2",
+  "targetPlatforms": ["aplite"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
