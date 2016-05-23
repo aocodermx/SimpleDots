@@ -7,11 +7,18 @@
   "versionCode": 1,
   "sdkVersion": "2",
   "targetPlatforms": ["aplite"],
+  "capabilities": [ "configurable" ],
   "watchapp": {
     "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "appkVersion"   : 0,
+    "appkWeather"   : 1,
+    "appkDate"      : 2,
+    "appkDateFormat": 3,
+    "appkHourFormat": 4,
+    "appkBattery"   : 5,
+    "appkBackground": 6
   },
   "resources": {
     "media": []

@@ -1,9 +1,12 @@
 #include <pebble.h>
 #include "TimeStyles.h"
 
+// TODO: Add full alphabet for Date display.
+// TODO: Add binary and bcd date display.
+
 void graphics_draw_line2(GContext *ctx, GPoint p0, GPoint p1, int8_t width);
 void draw_line_fallback ( GContext * ctx, GPoint p1, GPoint p2, int width );
-void draw_digit ( GContext * ctx, GRect box, int digit );
+void draw_digit ( GContext * ctx, GRect box, char digit );
 
 // Draw time as HH:MM
 void draw_time_style_24hrs ( GContext * ctx, GRect bounds, struct tm * tick_time ) {
@@ -51,7 +54,7 @@ void draw_time_style_12hrs ( GContext * ctx, GRect bounds, struct tm * tick_time
 }
 
 
-void draw_digit ( GContext * ctx, GRect box, int digit ) {
+void draw_digit ( GContext * ctx, GRect box, char digit ) {
   GPoint p1, p2;
   int line_width = ( 25 * box.size.w ) / 100;
 
@@ -219,6 +222,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'A': // A
+    case 'a':
       p1.x = box.origin.x + ( box.size.w / 4 );
       p1.y = box.origin.y + ( box.size.h / 10 ) * 9;
       p2.x = box.origin.x + ( box.size.w / 4 );
@@ -237,6 +241,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'B':
+    case 'b':
       p1.x = box.origin.x + ( box.size.w /  4 );
       p1.y = box.origin.y + ( box.size.h / 10 );
       p2.x = box.origin.x + ( box.size.w /  4 );
@@ -253,6 +258,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'C':
+    case 'c':
       p1.x = box.origin.x + ( box.size.w /  4 ) * 3;
       p1.y = box.origin.y + ( box.size.h / 10 );
       p2.x = box.origin.x + ( box.size.w /  4 );
@@ -266,6 +272,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'D':
+    case 'd':
       p1.x = box.origin.x + ( box.size.w /  4 ) * 3;
       p1.y = box.origin.y + ( box.size.h / 10 );
       p2.x = box.origin.x + ( box.size.w /  4 ) * 3;
@@ -282,6 +289,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'E':
+    case 'e':
       p1.x = box.origin.x + ( box.size.w /  4 ) * 3;
       p1.y = box.origin.y + ( box.size.h / 10 );
       p2.x = box.origin.x + ( box.size.w /  4 );
@@ -300,6 +308,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case 'F':
+    case 'f':
       p1.x = box.origin.x + ( box.size.w /  4 ) * 3;
       p1.y = box.origin.y + ( box.size.h / 10 );
       p2.x = box.origin.x + ( box.size.w /  4 );
@@ -316,6 +325,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       break;
     // Time characters
     case 'M':
+    case 'm':
       p1.x = box.origin.x + ( box.size.w / 4 );
       p1.y = box.origin.y + ( box.size.h / 10 ) * 9;
       p2.x = box.origin.x + ( box.size.w / 4 );
@@ -334,6 +344,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width / 2 );
       break;
     case 'P':
+    case 'p':
       p1.x = box.origin.x + ( box.size.w /  4 );
       p1.y = box.origin.y + ( box.size.h / 10 ) * 9;
       p2.x = box.origin.x + ( box.size.w /  4 );
@@ -350,7 +361,6 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     case ':':
-      // TODO: From circles to Rectangles.
       p1.x = box.origin.x + ( box.size.w /  2 );
       p1.y = box.origin.y + ( box.size.h / 10 ) * 3;
       graphics_fill_circle ( ctx, p1, line_width );
@@ -359,7 +369,6 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       graphics_fill_circle ( ctx, p2, line_width );
       break;
     case '.':
-      // TODO: From circles to Rectangles.
       p1.x = box.origin.x + ( box.size.w /  2 );
       p1.y = box.origin.y + ( box.size.h / 10 ) * 5;
       graphics_fill_circle ( ctx, p1, line_width );
@@ -372,7 +381,7 @@ void draw_digit ( GContext * ctx, GRect box, int digit ) {
       draw_line_fallback ( ctx, p1, p2, line_width );
       break;
     default:
-      APP_LOG ( APP_LOG_LEVEL_ERROR, "Invalid digit in decimal system %d", digit );
+      APP_LOG ( APP_LOG_LEVEL_ERROR, "Invalid digit in decimal system %c", digit );
       break;
   }
 }
