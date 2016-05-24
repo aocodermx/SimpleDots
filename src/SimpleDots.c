@@ -31,6 +31,8 @@ typedef enum {
 typedef enum {
   format12hrs = 1,
   format24hrs = 2,
+  formatBinary = 3,
+  formatBCD = 4
 } TimeFormat;
 
 // Function prototypes in order of implementation.
@@ -178,6 +180,12 @@ static void update_proc_layer_time ( Layer *layer, GContext *ctx ) {
       break;
     case format24hrs:
       draw_time_style_24hrs ( ctx, bounds, tick_time );
+      break;
+    case formatBinary:
+      draw_time_style_binary ( ctx, bounds, tick_time );
+      break;
+    case formatBCD:
+      draw_time_style_bcd ( ctx, bounds, tick_time );
       break;
     default:
       draw_time_style_24hrs ( ctx, bounds, tick_time );
