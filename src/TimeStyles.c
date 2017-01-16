@@ -26,15 +26,15 @@ void draw_time_style_12hrs ( GContext * ctx, GRect bounds, struct tm * tick_time
   strftime ( mins , sizeof( mins  ), "%M", tick_time );
   strftime ( amORpm , sizeof( amORpm  ), "%p", tick_time );
 
-  for ( uint a = 0; a < sizeof ( hours ); a++ ) {
+  for ( uint a = 0; a < strlen ( hours ); a++ ) {
     draw_digit ( ctx, GRect ( bounds.origin.x + digit_width * a, bounds.origin.y, digit_width, bounds.size.h ), hours[a] );
   }
 
-  for ( uint b = 2; b < sizeof ( mins ) + 2; b++ ) {
+  for ( uint b = 2; b < strlen ( mins ) + 2; b++ ) {
     draw_digit ( ctx, GRect ( bounds.origin.x + digit_width * b, bounds.origin.y + 5, digit_width, mins_height ), mins[b - 2] );
   }
 
-  for ( uint c = 2; c < sizeof ( amORpm ) + 2; c++ ) {
+  for ( uint c = 2; c < strlen ( amORpm ) + 2; c++ ) {
     draw_digit ( ctx, GRect ( bounds.origin.x + digit_width * c, bounds.origin.y + 10 + mins_height, digit_width, mins_height ), amORpm[c - 2] );
   }
 }
@@ -47,7 +47,7 @@ void draw_time_style_24hrs ( GContext * ctx, GRect bounds, struct tm * tick_time
 
   strftime ( buffer, sizeof( buffer ), "%H:%M", tick_time );
 
-  for ( uint i = 0; i < sizeof ( buffer ); i++ ) {
+  for ( uint i = 0; i < strlen ( buffer ); i++ ) {
     if ( i == 2 ) {
       draw_digit ( ctx, GRect ( bounds.origin.x + digit_width * i, bounds.origin.y, middle_width, bounds.size.h ), buffer[i] );
     } else if ( i > 2 ) {

@@ -1,17 +1,35 @@
-
 (function() {
-  loadConfiguration();
-  setEventHandlers();
+  processParams ( );
+  loadConfiguration ( );
+  setEventHandlers ( );
 })();
+
+function processParams ( ) {
+  if ( getQueryParam ( "watch_platform" ) == "aplite" ) {
+    $("#withBgcolor").parent().hide();
+  }
+  if ( getQueryParam ( "locationAvailable" ) == "true" ) {
+    localStorage.setItem ( 'locationAvailable', true );
+    $("#withWeatherCity").parent().parent().hide();
+  } else {
+    localStorage.setItem ( 'locationAvailable', false );
+  }
+}
 
 function loadConfiguration ( ) {
   if ( localStorage.conf_SimpleDots ) {
-    $( "#withDateFormat"  )[0].value   = localStorage.appkDateFormat;
-    $( "#withHourFormat"  )[0].value   = localStorage.appkHourFormat;
-    $( "#withBgcolor"     )[0].value   = localStorage.appkBackground;
-    $( "#withWeather"     )[0].checked = localStorage.appkWeather    === '1';
-    $( "#withDate"        )[0].checked = localStorage.appkDate       === '1';
-    $( "#withBatteryDots" )[0].checked = localStorage.appkBattery    === '1';
+    $( "#withWeather"      )[0].checked = localStorage.appkWeather === '1';
+    $( "#withWeatherCity"  )[0].value   = localStorage.appkWeatherCity;
+    $( "#withWeatherPeriod")[0].value   = localStorage.appkWeatherPeriod;
+    $( "#withWeatherUnits" )[0].value   = localStorage.appkWeatherUnits;
+
+    $( "#withDate"      )[0].checked = localStorage.appkDate    === '1';
+    $( "#withDateFormat")[0].value   = localStorage.appkDateFormat;
+
+    $( "#withHourFormat" )[0].value   = localStorage.appkHourFormat;
+    $( "#withBatteryDots")[0].checked = localStorage.appkBattery === '1';
+    $( "#withBgcolor"    )[0].value   = localStorage.appkBackground;
+    onWeatherChange ( );
     onDateChange ( );
   } else {
     console.log( "No configuration saved." );
@@ -20,17 +38,40 @@ function loadConfiguration ( ) {
 
 function saveConfiguration ( config ) {
   localStorage.conf_SimpleDots= true;
-  localStorage.appkWeather    = config.appkWeather;
+
+  localStorage.appkWeather       = config.appkWeather;
+  localStorage.appkWeatherCity   = config.appkWeatherCity;
+  localStorage.appkWeatherPeriod = config.appkWeatherPeriod;
+  localStorage.appkWeatherUnits  = config.appkWeatherUnits;
+
   localStorage.appkDate       = config.appkDate;
   localStorage.appkDateFormat = config.appkDateFormat;
+
   localStorage.appkHourFormat = config.appkHourFormat;
   localStorage.appkBattery    = config.appkBattery;
   localStorage.appkBackground = config.appkBackground;
 }
 
 function setEventHandlers ( ) {
-  $( '#withDate'    ).on( 'change', onDateChange );
-  $( '#save_button' ).on( 'click' , onSubmit     );
+  $( '#withWeather' ).on ( 'change', onWeatherChange );
+  $( '#withDate'    ).on ( 'change', onDateChange );
+  $( '#save_button' ).on ( 'click' , onSubmit     );
+}
+
+function onWeatherChange ( ) {
+  if ( $("#withWeather")[0].checked && localStorage.getItem ( 'locationAvailable' ) != "true" ) {
+    $("#withWeatherCity").parent().parent().show();
+  } else {
+    $("#withWeatherCity").parent().parent().hide();
+  }
+
+  if ( $("#withWeather")[0].checked ) {
+    $("#optionsWeatherPeriod").show();
+    $("#optionsWeatherUnits").show();
+  } else {
+    $("#optionsWeatherPeriod").hide();
+    $("#optionsWeatherUnits").hide();
+  }
 }
 
 function onDateChange ( ) {
@@ -43,20 +84,30 @@ function onDateChange ( ) {
 
 function onSubmit ( ) {
   var
-    appkBackground  = $( "#withBgcolor"     ).val(),
+    appkWeather       = $( "#withWeather"     )[0].checked ? 1 : 0,
+    appkWeatherCity   = $( "#withWeatherCity" ).val(),
+    appkWeatherUnits  = $( "#withWeatherUnits").val(),
+    appkWeatherPeriod = parseInt ( $( "#withWeatherPeriod").val() ),
+
+    appkDate        = $( "#withDate" )[0].checked ? 1 : 0,
     appkDateFormat  = parseInt ( $( "#withDateFormat" ).val( ) ),
+
     appkHourFormat  = parseInt ( $( "#withHourFormat" ).val( ) ),
-    appkWeather     = $( "#withWeather"     )[0].checked ? 1 : 0,
-    appkDate        = $( "#withDate"        )[0].checked ? 1 : 0,
-    appkBattery     = $( "#withBatteryDots" )[0].checked ? 1 : 0,
+    appkBattery     = $( "#withBatteryDots")[0].checked ? 1 : 0,
+    appkBackground  = $( "#withBgcolor"    ).val(),
 
   config = {
-    'appkWeather'    : appkWeather,
-    'appkDate'       : appkDate,
-    'appkDateFormat' : appkDateFormat,
-    'appkHourFormat' : appkHourFormat,
-    'appkBattery'    : appkBattery,
-    'appkBackground' : appkBackground,
+    'appkWeather'      : appkWeather,
+    'appkWeatherCity'      : appkWeatherCity,
+    'appkWeatherPeriod': appkWeatherPeriod,
+    'appkWeatherUnits'     : appkWeatherUnits,
+
+    'appkDate'         : appkDate,
+    'appkDateFormat'   : appkDateFormat,
+
+    'appkHourFormat'   : appkHourFormat,
+    'appkBattery'      : appkBattery,
+    'appkBackground'   : appkBackground,
   };
 
   saveConfiguration ( config );

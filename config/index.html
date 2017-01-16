@@ -28,6 +28,34 @@
       </label>
 
       <label class="item">
+        <div class="item-input-wrapper">
+          <input id="withWeatherCity" type="text" class="item-input" placeholder="Your City">
+        </div>
+      </label>
+
+      <label class="item item-subcontainer-content" id="optionsWeatherPeriod">
+        Refresh period
+        <select id="withWeatherPeriod" class="item-select">
+          <option class="item-select-option" checked value="5">5 Mins</option>
+          <option class="item-select-option" value="10">10 Mins</option>
+          <option class="item-select-option" value="20">20 Mins</option>
+          <option class="item-select-option" value="30">30 Mins</option>
+          <option class="item-select-option" value="40">40 Mins</option>
+          <option class="item-select-option" value="50">50 Mins</option>
+          <option class="item-select-option" value="60">60 Mins</option>
+        </select>
+      </label>
+
+      <label class="item item-subcontainer-content" id="optionsWeatherUnits">
+        Units
+        <select id="withWeatherUnits" class="item-select">
+          <option class="item-select-option" checked value="metric">Metric</option>
+          <option class="item-select-option" value="imperial">Imperial</option>
+        </select>
+      </label>
+
+
+      <label class="item">
         Date Bar
         <input id="withDate" type="checkbox" class="item-toggle" checked>
       </label>
@@ -71,7 +99,7 @@
   </div>
 
   <script src='./js/slate.min.js'></script>
-  <script src='./js/main.min.js'></script>
+  <script src='./js/main.js'></script>
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
