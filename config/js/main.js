@@ -98,9 +98,9 @@ function onSubmit ( ) {
 
   config = {
     'appkWeather'      : appkWeather,
-    'appkWeatherCity'      : appkWeatherCity,
+    'appkWeatherCity'  : appkWeatherCity,
     'appkWeatherPeriod': appkWeatherPeriod,
-    'appkWeatherUnits'     : appkWeatherUnits,
+    'appkWeatherUnits' : appkWeatherUnits,
 
     'appkDate'         : appkDate,
     'appkDateFormat'   : appkDateFormat,

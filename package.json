@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "author": "aocodermx",
+  "private": true,
+  "dependencies": {},
+  "keywords": [
+    "pebble-app"
+  ],
+  "pebble": {
+    "sdkVersion": "3",
+    "resources": {
+      "media": []
+    },
+    "projectType": "native",
+    "uuid": "b149d21c-0f9c-49ce-b76b-55b23dee37cf",
+    "messageKeys": {
+      "appkBackground": 6,
+      "appkReady": 10,
+      "appkWeatherPeriod": 7,
+      "appkWeather": 1,
+      "appkWeatherUnits": 8,
+      "appkDateFormat": 3,
+      "appkBattery": 5,
+      "appkHourFormat": 4,
+      "appkDate": 2,
+      "appkVersion": 0,
+      "appkWeather_icon": 9
+    },
+    "enableMultiJS": false,
+    "displayName": "SimpleDots",
+    "watchapp": {
+      "onlyShownOnCommunication": false,
+      "hiddenApp": false,
+      "watchface": true
+    },
+    "targetPlatforms": [
+      "aplite"
+    ],
+    "capabilities": [
+      "configurable",
+      "location"
+    ]
+  },
+  "name": "SimpleDots"
+}

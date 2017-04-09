@@ -500,7 +500,8 @@ void graphics_draw_line2(GContext *ctx, GPoint p0, GPoint p1, int8_t width) {
 
 void draw_line_fallback ( GContext * ctx, GPoint p1, GPoint p2, int width ) {
   #if defined ( PBL_SDK_3 )
-    graphics_draw_line ( ctx, p1, p2 );
+    //graphics_draw_line ( ctx, p1, p2 );
+    graphics_draw_line2 ( ctx, p1, p2, width );
   #else
     graphics_draw_line2 ( ctx, p1, p2, width );
   #endif
