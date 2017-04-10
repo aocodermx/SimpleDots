@@ -91,9 +91,11 @@ void draw_time_style_bcd   ( GContext * ctx, GRect bounds, struct tm * tick_time
 }
 
 void draw_digit_binary ( GContext * ctx, GRect box, int digit ) {
+  int line_width = ( 10 * box.size.w ) / 100;
   GRect rect = GRect ( box.origin.x + DIGIT_BINARY_SPACE, box.origin.y + DIGIT_BINARY_SPACE, box.size.w - DIGIT_BINARY_SPACE * 2, box.size.h - DIGIT_BINARY_SPACE * 2 );
   switch ( digit ) {
     case 0:
+      graphics_context_set_stroke_width ( ctx, line_width );
       graphics_draw_round_rect ( ctx, rect, DIGIT_BINARY_SPACE );
       break;
     case 1:
@@ -107,11 +109,13 @@ void draw_digit_binary ( GContext * ctx, GRect box, int digit ) {
 
 void draw_digit_bcd ( GContext * ctx, GRect box, int digit ) {
   GRect rect;
+  int line_width = ( 10 * box.size.w ) / 100;
   int digit_height = box.size.h / 4;
   for ( uint i = 4; i > 0; i-- ) {
     rect = GRect ( box.origin.x + DIGIT_BCD_SPACE, box.origin.y + digit_height * (i -1) , box.size.w - DIGIT_BCD_SPACE * 2, box.size.h / 4.5 );
     switch ( digit % 2 ) {
       case 0:
+        graphics_context_set_stroke_width ( ctx, line_width );
         graphics_draw_round_rect ( ctx, rect, DIGIT_BCD_SPACE );
         break;
       case 1:
@@ -500,7 +504,6 @@ void graphics_draw_line2(GContext *ctx, GPoint p0, GPoint p1, int8_t width) {
 
 void draw_line_fallback ( GContext * ctx, GPoint p1, GPoint p2, int width ) {
   #if defined ( PBL_SDK_3 )
-    //graphics_draw_line ( ctx, p1, p2 );
     graphics_draw_line2 ( ctx, p1, p2, width );
   #else
     graphics_draw_line2 ( ctx, p1, p2, width );

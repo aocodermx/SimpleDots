@@ -1,0 +1,93 @@
+[
+  {
+    "type": "heading", 
+    "defaultValue": "SimpleDots" 
+  },
+  {
+    "type": "section", 
+    "items": [
+      {
+        "type": "heading",
+        "defaultValue": "Date and Time settings"
+      },
+      {
+        "type": "select",
+        "messageKey": "appkDateFormat",
+        "label": "Date Format",
+        "options" : [
+          { "label" : "DD/MM/YYYY"   , "value" : 1 },
+          { "label" : "DD/MM/YY"     , "value" : 2 },
+          { "label" : "DD Month YYYY", "value" : 3 },
+          { "label" : "Day DD"       , "value" : 4 },
+          { "label" : "Without date" , "value" : 0 }
+        ]
+      },
+      {
+        "type" : "select",
+        "messageKey" : "appkHourFormat",
+        "label" : "Time Format",
+        "options": [
+          { "label" : "12 Hours"       , "value" : 1 },
+          { "label" : "24 Hours"       , "value" : 2 },
+          { "label" : "24 Hours Binary", "value" : 3 },
+          { "label" : "24 Hours BCD"   , "value" : 4 }
+        ]
+      }
+    ]
+  },
+  {
+    "type" : "section",
+    "items" : [
+      {
+        "type" : "heading",
+        "defaultValue" : "Optional Settings"
+      },
+      {
+        "type" : "toggle",
+        "label" : "Show weather",
+        "messageKey" : "appkWeather",
+        "defaultValue" : true
+      },
+      {
+        "type" : "select",
+        "messageKey" : "appkWeatherPeriod",
+        "label" : "Weather update period",
+        "options": [
+          { "label" : " 5 Minutes", "value" :  5 },
+          { "label" : "10 Minutes", "value" : 10 },
+          { "label" : "20 Minutes", "value" : 20 },
+          { "label" : "30 Minutes", "value" : 30 },
+          { "label" : "40 Minutes", "value" : 40 },
+          { "label" : "50 Minutes", "value" : 50 },
+          { "label" : "60 Minutes", "value" : 60 }
+        ]
+      },
+      {
+        "type" : "select",
+        "messageKey" : "appkWeatherUnits",
+        "label" : "Weather units",
+        "options": [
+          { "label" : "Metric"  , "value" : "metric"   },
+          { "label" : "Imperial", "value" : "imperial" }
+        ]
+      },
+      {
+        "type" : "toggle",
+        "label" : "Show battery dots",
+        "messageKey" : "appkBattery",
+        "defaultValue" : true
+      },
+      {
+        "type" : "color",
+        "messageKey": "appkBackground",
+        "defaultValue": "ff0000",
+        "label": "Background Color",
+        "sunlight": true
+      }
+    ]
+  },
+  {
+    "type": "submit",
+    "defaultValue": "Save"
+  }
+]

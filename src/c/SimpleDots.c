@@ -15,7 +15,6 @@ static bool s_conf_weather;
 static int  s_conf_weather_period;
 static int  s_conf_weather_icon;
 // s_conf_weather_units;
-static bool s_conf_date;
 static int  s_conf_date_format;
 static int  s_conf_hour_format;
 static bool s_conf_battery;
@@ -71,7 +70,6 @@ static void window_load ( Window *window ) {
   s_conf_weather     = persist_exists ( appkWeather    ) ? persist_read_int ( appkWeather    ) : 1;
   s_conf_weather_period = persist_exists ( appkWeatherPeriod ) ? persist_read_int ( appkWeatherPeriod ) : 5;
   s_conf_weather_icon = persist_exists ( appkWeather_icon ) ? persist_read_int ( appkWeather_icon ) : 0;
-  s_conf_date        = persist_exists ( appkDate       ) ? persist_read_int ( appkDate       ) : 1;
   s_conf_date_format = persist_exists ( appkDateFormat ) ? persist_read_int ( appkDateFormat ) : 1;
   s_conf_hour_format = persist_exists ( appkHourFormat ) ? persist_read_int ( appkHourFormat ) : 1;
   s_conf_battery     = persist_exists ( appkBattery    ) ? persist_read_int ( appkBattery    ) : 1;
@@ -88,7 +86,6 @@ static void window_appear ( Window *window ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_appear" );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather    : %d", s_conf_weather     );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather_period: %d", s_conf_weather_period );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_date       : %d", s_conf_date        );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_date_format: %d", s_conf_date_format );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_hour_format: %d", s_conf_hour_format );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_battery    : %d", s_conf_battery     );
@@ -103,7 +100,6 @@ static void window_disappear ( Window *window ) {
   persist_write_int ( appkWeather, s_conf_weather );
   persist_write_int ( appkWeatherPeriod, s_conf_weather_period );
   persist_write_int ( appkWeather_icon, s_conf_weather_icon );
-  persist_write_int ( appkDate, s_conf_date );
   persist_write_int ( appkDateFormat, s_conf_date_format );
   persist_write_int ( appkHourFormat, s_conf_hour_format );
   persist_write_int ( appkBattery, s_conf_battery );
@@ -115,7 +111,7 @@ static void window_unload ( Window *window ) {
   // Destroy UI components
   layer_destroy ( s_layer_time );
   if ( s_conf_weather ) text_layer_destroy ( s_layer_weather );
-  if ( s_conf_date    ) layer_destroy ( s_layer_date );
+  if ( s_conf_date_format != 0 ) layer_destroy ( s_layer_date );
   if ( s_conf_battery ) layer_destroy ( s_layer_battery );
 
   // Unsubscribe services.
@@ -140,7 +136,7 @@ static void draw_ui ( ) {
     layer_add_child ( window_layer, text_layer_get_layer ( s_layer_weather ) );
   }
 
-  if ( s_conf_date ) {
+  if ( s_conf_date_format != 0 ) {
     s_layer_date = layer_create ( GRect ( 0, height_offset, bounds.size.w, LAYER_HEIGHT_DATE ) );
     layer_set_update_proc ( s_layer_date, update_proc_layer_date );
     height_offset += LAYER_HEIGHT_DATE;
@@ -165,9 +161,9 @@ static void redraw_ui ( ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: redraw_ui" );
   layer_remove_child_layers ( window_get_root_layer ( window ) );
 
-  if ( s_conf_weather ) text_layer_destroy ( s_layer_weather );
-  if ( s_conf_date    ) layer_destroy ( s_layer_date );
-  if ( s_conf_battery ) layer_destroy ( s_layer_battery );
+  if ( s_conf_weather   ) text_layer_destroy ( s_layer_weather );
+  if ( s_conf_date_format != 0 ) layer_destroy ( s_layer_date );
+  if ( s_conf_battery   ) layer_destroy ( s_layer_battery );
   layer_destroy ( s_layer_time );
 
   draw_ui ( );
@@ -196,7 +192,7 @@ static void handler_ticktimer_service ( struct tm *tick_time, TimeUnits units_ch
     APP_LOG( APP_LOG_LEVEL_INFO, "handler_ticktimer_service: Weather requested %d", result );
   }
   layer_mark_dirty ( s_layer_time );
-  if ( s_conf_date ) {
+  if ( s_conf_date_format != 0 ) {
     layer_mark_dirty ( s_layer_date );
   }
 }
@@ -301,7 +297,6 @@ static void handler_inbox_success ( DictionaryIterator * iterator, void * contex
   Tuple * tuple_appkWeatherPeriod = dict_find ( iterator, appkWeatherPeriod );
   Tuple * tuple_appkWeatherIcon   = dict_find ( iterator, appkWeather_icon );
 
-  Tuple * tuple_appkDate       = dict_find ( iterator, appkDate );
   Tuple * tuple_appkDateFormat = dict_find ( iterator, appkDateFormat );
 
   Tuple * tuple_appkHourFormat = dict_find ( iterator, appkHourFormat );
@@ -319,21 +314,19 @@ static void handler_inbox_success ( DictionaryIterator * iterator, void * contex
     update_proc_layer_weather ( NULL, NULL );
   }
 
-  if ( tuple_appkWeather    && tuple_appkWeatherPeriod && tuple_appkDate       &&
+  if ( tuple_appkWeather    && tuple_appkWeatherPeriod &&
        tuple_appkDateFormat && tuple_appkHourFormat    &&
        tuple_appkBattery    && tuple_appkBackground    ) {
 
     s_conf_weather        = tuple_appkWeather->value->uint8;
-    s_conf_weather_period = tuple_appkWeatherPeriod->value->uint8;
-    s_conf_date        = tuple_appkDate->value->uint8;
-    s_conf_date_format = tuple_appkDateFormat->value->uint8;
-    s_conf_hour_format = tuple_appkHourFormat->value->uint8;
+    s_conf_weather_period = tuple_appkWeatherPeriod->value->uint8 - 48;
+    s_conf_date_format = tuple_appkDateFormat->value->uint8 - 48;
+    s_conf_hour_format = tuple_appkHourFormat->value->uint8 - 48;
     s_conf_battery     = tuple_appkBattery->value->uint8;
     s_conf_background  = tuple_appkBattery->value->int32;
 
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather      : %d", s_conf_weather );
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeatherPeriod: %d", s_conf_weather_period );
-    APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkDate      : %d", s_conf_date );
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkDateFormat: %d", s_conf_date_format );
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkHourFormat: %d", s_conf_hour_format );
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkBattery   : %d", s_conf_battery );

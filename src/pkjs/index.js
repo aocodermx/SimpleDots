@@ -1,3 +1,7 @@
+var Clay       = require ( 'pebble-clay' );
+var clayConfig = require ( './clayConfig.json' );
+var clay       = new Clay ( clayConfig );
+
 var geoWatch;
 var owm_apik = '9c773fb0b93229341b90eed4c3c909ad';
 
@@ -7,6 +11,7 @@ Pebble.addEventListener('ready', function() {
   console.log ( 'Application Ready' );
 });
 
+/*
 Pebble.addEventListener('showConfiguration', function ( ) {
   var
     //host = '192.168.1.194:8000/config/?',
@@ -48,6 +53,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
     console.log('Error sending config data!');
   });
 });
+*/
 
 Pebble.addEventListener('appmessage', function(e) {
   console.log('Received message ' + JSON.stringify ( e.payload ) );
@@ -104,7 +110,7 @@ function sendWeatherBack ( ) {
 
     dict['appkWeather_icon'] = parseInt ( icon );
 
-    Pebble.sendAppMessage( dict, function() {
+    Pebble.sendAppMessage( dict, function ( ) {
       console.log ( 'Icon sent successfully.' + JSON.stringify ( dict ) );
     }, function () {
       console.log ( 'Icon failed.' + JSON.stringify ( dict ) );
