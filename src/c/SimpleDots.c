@@ -5,10 +5,11 @@
 static Window *window;
 
 // Variables for UI.
-static TextLayer *s_layer_weather;
-static Layer     *s_layer_time;
-static Layer     *s_layer_date;
-static Layer     *s_layer_battery;
+static BitmapLayer *s_layer_weather;
+static Layer       *s_layer_time;
+static Layer       *s_layer_date;
+static Layer       *s_layer_battery;
+static GBitmap     *s_bitmap_weather_icon;
 
 static bool s_conf_ready;
 static bool s_conf_weather;
@@ -110,7 +111,10 @@ static void window_unload ( Window *window ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_unload" );
   // Destroy UI components
   layer_destroy ( s_layer_time );
-  if ( s_conf_weather ) text_layer_destroy ( s_layer_weather );
+  if ( s_conf_weather ) {
+    gbitmap_destroy ( s_bitmap_weather_icon );
+    bitmap_layer_destroy ( s_layer_weather );
+  }
   if ( s_conf_date_format != 0 ) layer_destroy ( s_layer_date );
   if ( s_conf_battery ) layer_destroy ( s_layer_battery );
 
@@ -129,11 +133,11 @@ static void draw_ui ( ) {
   GRect bounds        = layer_get_bounds ( window_layer );
 
   if ( s_conf_weather ) {
-    s_layer_weather = text_layer_create ( GRect ( 0, height_offset + LAYER_HEIGHT_WEATHER / 3, bounds.size.w, LAYER_HEIGHT_WEATHER ) );
-    text_layer_set_text_alignment ( s_layer_weather, GTextAlignmentCenter );
+    s_layer_weather = bitmap_layer_create ( GRect ( 0, height_offset, bounds.size.w, LAYER_HEIGHT_WEATHER ) );
+    // text_layer_set_text_alignment ( s_layer_weather, GTextAlignmentCenter );
     update_proc_layer_weather ( NULL, NULL );
     height_offset += LAYER_HEIGHT_WEATHER;
-    layer_add_child ( window_layer, text_layer_get_layer ( s_layer_weather ) );
+    layer_add_child ( window_layer, bitmap_layer_get_layer( ( s_layer_weather ) ) );
   }
 
   if ( s_conf_date_format != 0 ) {
@@ -161,14 +165,17 @@ static void redraw_ui ( ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: redraw_ui" );
   layer_remove_child_layers ( window_get_root_layer ( window ) );
 
-  if ( s_conf_weather   ) text_layer_destroy ( s_layer_weather );
+  if ( s_conf_weather ) {
+    gbitmap_destroy ( s_bitmap_weather_icon );
+    bitmap_layer_destroy ( s_layer_weather );
+  }
   if ( s_conf_date_format != 0 ) layer_destroy ( s_layer_date );
   if ( s_conf_battery   ) layer_destroy ( s_layer_battery );
   layer_destroy ( s_layer_time );
 
   draw_ui ( );
 
-  layer_mark_dirty ( text_layer_get_layer ( s_layer_weather ) );
+  layer_mark_dirty ( bitmap_layer_get_layer ( s_layer_weather ) );
   layer_mark_dirty ( s_layer_date );
   layer_mark_dirty ( s_layer_time );
   layer_mark_dirty ( s_layer_battery );
@@ -203,11 +210,80 @@ static void handler_battery_service ( BatteryChargeState charge ) {
 }
 
 static void update_proc_layer_weather ( Layer *layer, GContext *ctx ) {
-  static char weather[15];
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_weather" );
 
-  snprintf ( weather, sizeof(weather), "WEATHER:%d", s_conf_weather_icon );
-  text_layer_set_text ( s_layer_weather, weather );
+  switch ( s_conf_weather_icon ) {
+    case 10:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W010 );
+      break;
+    case 11:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W011 );
+      break;
+
+    case 20:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W020 );
+      break;
+    case 21:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W021 );
+      break;
+    
+    case 30:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W030 );
+      break;
+    case 31:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W031 );
+      break;
+    
+    case 40:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W040 );
+      break;
+    case 41:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W041 );
+      break;
+    
+    case 90:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W090 );
+      break;
+    case 91:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W091 );
+      break;
+    
+    case 100:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W100 );
+      break;
+    case 101:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W101 );
+      break;
+    
+    case 110:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W110 );
+      break;
+    case 111:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W111 );
+      break;
+    
+    case 130:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W130 );
+      break;
+    case 131:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W131 );
+      break;
+    
+    case 500:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W500 );
+      break;
+    case 501:
+      s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_W501 );
+      break;
+    
+    default:
+      APP_LOG ( APP_LOG_LEVEL_INFO, "Weather %d not handled", s_conf_weather_icon );
+      break;
+  }
+  
+  bitmap_layer_set_compositing_mode ( s_layer_weather, GCompOpSet );
+  bitmap_layer_set_bitmap ( s_layer_weather, s_bitmap_weather_icon );
+
 }
 
 static void update_proc_layer_time ( Layer *layer, GContext *ctx ) {
@@ -309,9 +385,13 @@ static void handler_inbox_success ( DictionaryIterator * iterator, void * contex
   }
 
   if ( tuple_appkWeatherIcon /* More weather params */ ) {
-    s_conf_weather_icon = tuple_appkWeatherIcon->value->uint8;
-    APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon is %d", s_conf_weather_icon );
-    update_proc_layer_weather ( NULL, NULL );
+    if ( s_conf_weather_icon != tuple_appkWeatherIcon->value->uint8 ) {
+      s_conf_weather_icon = tuple_appkWeatherIcon->value->uint8;
+      APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon is %d", s_conf_weather_icon );
+      update_proc_layer_weather ( NULL, NULL );
+    } else {
+      APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon hasn't changed' %d", s_conf_weather_icon );
+    }
   }
 
   if ( tuple_appkWeather    && tuple_appkWeatherPeriod &&
