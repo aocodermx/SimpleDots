@@ -12,6 +12,7 @@ static Layer       *s_layer_battery;
 static GBitmap     *s_bitmap_weather_icon;
 
 static bool s_conf_ready;
+static bool s_conf_connected;
 static bool s_conf_weather;
 static int  s_conf_weather_period;
 static int  s_conf_weather_icon;
@@ -54,6 +55,7 @@ static void draw_ui   ( );
 static void redraw_ui ( );
 static void handler_ticktimer_service ( struct tm *tick_time, TimeUnits units_changed );
 static void handler_battery_service ( BatteryChargeState charge );
+static void handler_connection_service ( bool connected );
 static void update_proc_layer_weather ( Layer *layer, GContext *ctx );
 static void update_proc_layer_time ( Layer *layer, GContext *context );
 static void update_proc_layer_date ( Layer *layer, GContext *context );
@@ -68,6 +70,7 @@ static void handler_outbox_failed   ( DictionaryIterator *, AppMessageResult, vo
 // Functions implementation.
 static void window_load ( Window *window ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_load" );
+  s_conf_connected   = connection_service_peek_pebble_app_connection ( );
   s_conf_weather     = persist_exists ( appkWeather    ) ? persist_read_int ( appkWeather    ) : 1;
   s_conf_weather_period = persist_exists ( appkWeatherPeriod ) ? persist_read_int ( appkWeatherPeriod ) : 5;
   s_conf_weather_icon = persist_exists ( appkWeather_icon ) ? persist_read_int ( appkWeather_icon ) : 0;
@@ -81,10 +84,15 @@ static void window_load ( Window *window ) {
   // Subscribe services.
   tick_timer_service_subscribe ( MINUTE_UNIT, handler_ticktimer_service );
   battery_state_service_subscribe ( handler_battery_service );
+  connection_service_subscribe ( ( ConnectionHandlers ) {
+    .pebble_app_connection_handler = handler_connection_service,
+    .pebblekit_connection_handler  = NULL
+  } );
 }
 
 static void window_appear ( Window *window ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_appear" );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_connected  : %d", s_conf_connected   );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather    : %d", s_conf_weather     );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather_period: %d", s_conf_weather_period );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_date_format: %d", s_conf_date_format );
@@ -121,6 +129,7 @@ static void window_unload ( Window *window ) {
   // Unsubscribe services.
   tick_timer_service_unsubscribe ( );
   battery_state_service_unsubscribe ( );
+  connection_service_unsubscribe ( );
 }
 
 static void draw_ui ( ) {
@@ -186,7 +195,7 @@ static void handler_ticktimer_service ( struct tm *tick_time, TimeUnits units_ch
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: handler_ticktimer_service" );
   APP_LOG ( APP_LOG_LEVEL_INFO, "handler_ticktimer_service, Minute: %d, Module: %d", tick_time->tm_min, tick_time->tm_min % s_conf_weather_period );
   // if ( s_conf_ready && s_conf_weather && ( tick_time->tm_min % s_conf_weather_period == 0 ) ) {
-  if ( s_conf_ready && s_conf_weather ) {
+  if ( s_conf_ready && s_conf_weather && s_conf_connected ) {
     int result = 0;
     int value  = 1;
 
@@ -209,8 +218,36 @@ static void handler_battery_service ( BatteryChargeState charge ) {
   layer_mark_dirty ( s_layer_battery );
 }
 
+static void handler_connection_service ( bool connected ) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "on: handler_connection_service Pebble app %sconnected", connected ? "" : "dis");
+  if ( connected ) {
+    if ( s_conf_ready && s_conf_weather ) {
+        int result = 0;
+        int value  = 1;
+
+        DictionaryIterator *request;
+        app_message_outbox_begin ( &request );
+        dict_write_int ( request, 101, &value, sizeof(int), false );
+        result = app_message_outbox_send ( );
+
+        // s_flag_quote_request_pending = ( result == APP_MSG_OK ) ? false : true;
+        APP_LOG( APP_LOG_LEVEL_INFO, "handler_connection_service: Weather requested %d", result );
+        s_conf_connected = true;
+        s_conf_weather_icon = 0;
+      }
+  } else {
+    s_conf_connected = false;
+    s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_DISCONNECT );
+    bitmap_layer_set_compositing_mode ( s_layer_weather, GCompOpSet );
+    bitmap_layer_set_bitmap ( s_layer_weather, s_bitmap_weather_icon );
+  }
+}
+
 static void update_proc_layer_weather ( Layer *layer, GContext *ctx ) {
   APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_weather" );
+
+  if ( s_bitmap_weather_icon != NULL )
+    gbitmap_destroy ( s_bitmap_weather_icon );
 
   switch ( s_conf_weather_icon ) {
     case 10:
@@ -283,7 +320,6 @@ static void update_proc_layer_weather ( Layer *layer, GContext *ctx ) {
   
   bitmap_layer_set_compositing_mode ( s_layer_weather, GCompOpSet );
   bitmap_layer_set_bitmap ( s_layer_weather, s_bitmap_weather_icon );
-
 }
 
 static void update_proc_layer_time ( Layer *layer, GContext *ctx ) {

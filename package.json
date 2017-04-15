@@ -20,93 +20,98 @@
         },
         {
           "type": "png",
+          "name": "DISCONNECT",
+          "file": "disconnection.png"
+        },
+        {
+          "type": "png",
           "name": "W010",
-          "file": "store/weather/w010.svg.png"
+          "file": "weather/w010.svg.png"
         },
         {
           "type": "png",
           "name": "W011",
-          "file": "store/weather/w011.svg.png"
+          "file": "weather/w011.svg.png"
         },
         {
           "type": "png",
           "name": "W020",
-          "file": "store/weather/w020.svg.png"
+          "file": "weather/w020.svg.png"
         },
         {
           "type": "png",
           "name": "W021",
-          "file": "store/weather/w021.svg.png"
+          "file": "weather/w021.svg.png"
         },
         {
           "type": "png",
           "name": "W030",
-          "file": "store/weather/w030.svg.png"
+          "file": "weather/w030.svg.png"
         },
         {
           "type": "png",
           "name": "W031",
-          "file": "store/weather/w031.svg.png"
+          "file": "weather/w031.svg.png"
         },
         {
           "type": "png",
           "name": "W040",
-          "file": "store/weather/w040.svg.png"
+          "file": "weather/w040.svg.png"
         },
         {
           "type": "png",
           "name": "W041",
-          "file": "store/weather/w041.svg.png"
+          "file": "weather/w041.svg.png"
         },
         {
           "type": "png",
           "name": "W090",
-          "file": "store/weather/w090.svg.png"
+          "file": "weather/w090.svg.png"
         },
         {
           "type": "png",
           "name": "W091",
-          "file": "store/weather/w091.svg.png"
+          "file": "weather/w091.svg.png"
         },
         {
           "type": "png",
           "name": "W100",
-          "file": "store/weather/w100.svg.png"
+          "file": "weather/w100.svg.png"
         },
         {
           "type": "png",
           "name": "W101",
-          "file": "store/weather/w101.svg.png"
+          "file": "weather/w101.svg.png"
         },
         {
           "type": "png",
           "name": "W110",
-          "file": "store/weather/w110.svg.png"
+          "file": "weather/w110.svg.png"
         },
         {
           "type": "png",
           "name": "W111",
-          "file": "store/weather/w111.svg.png"
+          "file": "weather/w111.svg.png"
         },
         {
           "type": "png",
           "name": "W130",
-          "file": "store/weather/w130.svg.png"
+          "file": "weather/w130.svg.png"
         },
         {
           "type": "png",
           "name": "W131",
-          "file": "store/weather/w131.svg.png"
+          "file": "weather/w131.svg.png"
         },
         {
           "type": "png",
           "name": "W500",
-          "file": "store/weather/w500.svg.png"
+          "file": "weather/w500.svg.png"
         },
         {
           "type": "png",
           "name": "W501",
-          "file": "store/weather/w501.svg.png"
+          "file": "weather/w501.svg.png"
         }
       ]
     },
