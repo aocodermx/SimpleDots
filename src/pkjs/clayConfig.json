@@ -17,8 +17,6 @@
         "options" : [
           { "label" : "DD/MM/YYYY"   , "value" : 1 },
           { "label" : "DD/MM/YY"     , "value" : 2 },
-          { "label" : "DD Month YYYY", "value" : 3 },
-          { "label" : "Day DD"       , "value" : 4 },
           { "label" : "Without date" , "value" : 0 }
         ]
       },
@@ -63,15 +61,6 @@
         ]
       },
       {
-        "type" : "select",
-        "messageKey" : "appkWeatherUnits",
-        "label" : "Weather units",
-        "options": [
-          { "label" : "Metric"  , "value" : "metric"   },
-          { "label" : "Imperial", "value" : "imperial" }
-        ]
-      },
-      {
         "type" : "toggle",
         "label" : "Show battery dots",
         "messageKey" : "appkBattery",
@@ -80,7 +69,7 @@
       {
         "type" : "color",
         "messageKey": "appkBackground",
-        "defaultValue": "ff0000",
+        "defaultValue": "FFFFFF",
         "label": "Background Color",
         "sunlight": true
       }

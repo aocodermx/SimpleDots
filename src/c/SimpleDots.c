@@ -2,6 +2,8 @@
 #include "TimeStyles.h"
 #include "SimpleDots.h"
 
+#include "gbitmap_color_palette_manipulator.h"
+
 static Window *window;
 
 // Variables for UI.
@@ -20,7 +22,7 @@ static int  s_conf_weather_icon;
 static int  s_conf_date_format;
 static int  s_conf_hour_format;
 static bool s_conf_battery;
-static int  s_conf_background;
+static int s_conf_background;
 
 // Enum for Phone communication.
 typedef enum {
@@ -69,7 +71,6 @@ static void handler_outbox_failed   ( DictionaryIterator *, AppMessageResult, vo
 
 // Functions implementation.
 static void window_load ( Window *window ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_load" );
   s_conf_connected   = connection_service_peek_pebble_app_connection ( );
   s_conf_weather     = persist_exists ( appkWeather    ) ? persist_read_int ( appkWeather    ) : 1;
   s_conf_weather_period = persist_exists ( appkWeatherPeriod ) ? persist_read_int ( appkWeatherPeriod ) : 5;
@@ -77,9 +78,12 @@ static void window_load ( Window *window ) {
   s_conf_date_format = persist_exists ( appkDateFormat ) ? persist_read_int ( appkDateFormat ) : 1;
   s_conf_hour_format = persist_exists ( appkHourFormat ) ? persist_read_int ( appkHourFormat ) : 1;
   s_conf_battery     = persist_exists ( appkBattery    ) ? persist_read_int ( appkBattery    ) : 1;
-  s_conf_background  = persist_exists ( appkBackground ) ? persist_read_int ( appkBackground ) : 1;
+  s_conf_background  = persist_exists ( appkBackground ) ? persist_read_int ( appkBackground ) : 0;
 
   draw_ui ( );
+
+  if ( !s_conf_connected )
+    handler_connection_service ( false );
 
   // Subscribe services.
   tick_timer_service_subscribe ( MINUTE_UNIT, handler_ticktimer_service );
@@ -91,21 +95,19 @@ static void window_load ( Window *window ) {
 }
 
 static void window_appear ( Window *window ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_appear" );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_connected  : %d", s_conf_connected   );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather    : %d", s_conf_weather     );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_connected     : %d", s_conf_connected   );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather       : %d", s_conf_weather     );
   APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_weather_period: %d", s_conf_weather_period );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_date_format: %d", s_conf_date_format );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_hour_format: %d", s_conf_hour_format );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_battery    : %d", s_conf_battery     );
-  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_background : %d", s_conf_background  );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_date_format   : %d", s_conf_date_format );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_hour_format   : %d", s_conf_hour_format );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_battery       : %d", s_conf_battery     );
+  APP_LOG ( APP_LOG_LEVEL_INFO, "CONFIG s_conf_background    : %d", s_conf_background  );
   if ( s_conf_battery ) {
     handler_battery_service ( battery_state_service_peek ( ) );
   }
 }
 
 static void window_disappear ( Window *window ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_disappear" );
   persist_write_int ( appkWeather, s_conf_weather );
   persist_write_int ( appkWeatherPeriod, s_conf_weather_period );
   persist_write_int ( appkWeather_icon, s_conf_weather_icon );
@@ -116,7 +118,6 @@ static void window_disappear ( Window *window ) {
 }
 
 static void window_unload ( Window *window ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: window_unload" );
   // Destroy UI components
   layer_destroy ( s_layer_time );
   if ( s_conf_weather ) {
@@ -133,7 +134,6 @@ static void window_unload ( Window *window ) {
 }
 
 static void draw_ui ( ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: draw_ui" );
   int height_offset = 0;
   int time_height = 0;
   height_offset += 5;
@@ -141,9 +141,12 @@ static void draw_ui ( ) {
   Layer *window_layer = window_get_root_layer ( window );
   GRect bounds        = layer_get_bounds ( window_layer );
 
+  window_set_background_color ( window,  GColorFromHEX ( s_conf_background ) );
+
+
   if ( s_conf_weather ) {
     s_layer_weather = bitmap_layer_create ( GRect ( 0, height_offset, bounds.size.w, LAYER_HEIGHT_WEATHER ) );
-    // text_layer_set_text_alignment ( s_layer_weather, GTextAlignmentCenter );
+    bitmap_layer_set_background_color ( s_layer_weather, GColorFromHEX ( s_conf_background ) );
     update_proc_layer_weather ( NULL, NULL );
     height_offset += LAYER_HEIGHT_WEATHER;
     layer_add_child ( window_layer, bitmap_layer_get_layer( ( s_layer_weather ) ) );
@@ -171,7 +174,6 @@ static void draw_ui ( ) {
 }
 
 static void redraw_ui ( ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: redraw_ui" );
   layer_remove_child_layers ( window_get_root_layer ( window ) );
 
   if ( s_conf_weather ) {
@@ -192,10 +194,9 @@ static void redraw_ui ( ) {
 }
 
 static void handler_ticktimer_service ( struct tm *tick_time, TimeUnits units_changed ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: handler_ticktimer_service" );
   APP_LOG ( APP_LOG_LEVEL_INFO, "handler_ticktimer_service, Minute: %d, Module: %d", tick_time->tm_min, tick_time->tm_min % s_conf_weather_period );
-  // if ( s_conf_ready && s_conf_weather && ( tick_time->tm_min % s_conf_weather_period == 0 ) ) {
-  if ( s_conf_ready && s_conf_weather && s_conf_connected ) {
+  if ( s_conf_ready && s_conf_weather && s_conf_connected && ( tick_time->tm_min % s_conf_weather_period == 0 ) ) {
+  //if ( s_conf_ready && s_conf_weather && s_conf_connected ) {
     int result = 0;
     int value  = 1;
 
@@ -214,7 +215,6 @@ static void handler_ticktimer_service ( struct tm *tick_time, TimeUnits units_ch
 }
 
 static void handler_battery_service ( BatteryChargeState charge ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: handler_battery_service" );
   layer_mark_dirty ( s_layer_battery );
 }
 
@@ -238,16 +238,13 @@ static void handler_connection_service ( bool connected ) {
   } else {
     s_conf_connected = false;
     s_bitmap_weather_icon = gbitmap_create_with_resource ( RESOURCE_ID_DISCONNECT );
+    set_icon_color ( s_bitmap_weather_icon, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ), true );
     bitmap_layer_set_compositing_mode ( s_layer_weather, GCompOpSet );
     bitmap_layer_set_bitmap ( s_layer_weather, s_bitmap_weather_icon );
   }
 }
 
 static void update_proc_layer_weather ( Layer *layer, GContext *ctx ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_weather" );
-
-  if ( s_bitmap_weather_icon != NULL )
-    gbitmap_destroy ( s_bitmap_weather_icon );
 
   switch ( s_conf_weather_icon ) {
     case 10:
@@ -317,15 +314,17 @@ static void update_proc_layer_weather ( Layer *layer, GContext *ctx ) {
       APP_LOG ( APP_LOG_LEVEL_INFO, "Weather %d not handled", s_conf_weather_icon );
       break;
   }
-  
+  //graphics_context_set_stroke_color ( ctx, gcolor_legible_over ( (GColor) s_conf_background ) );
+  set_icon_color ( s_bitmap_weather_icon, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ), true );
   bitmap_layer_set_compositing_mode ( s_layer_weather, GCompOpSet );
   bitmap_layer_set_bitmap ( s_layer_weather, s_bitmap_weather_icon );
 }
 
 static void update_proc_layer_time ( Layer *layer, GContext *ctx ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_time" );
   // TODO: Add ENUM for all time styles.
   GRect bounds = layer_get_bounds ( s_layer_time );
+  graphics_context_set_stroke_color ( ctx, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ) );
+  graphics_context_set_fill_color ( ctx, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ) );
 
   time_t temp          = time      ( NULL );
   struct tm *tick_time = localtime ( &temp );
@@ -350,12 +349,12 @@ static void update_proc_layer_time ( Layer *layer, GContext *ctx ) {
 }
 
 static void update_proc_layer_date ( Layer *layer, GContext *ctx ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_date" );
   time_t temp          = time      ( NULL );
   struct tm *tick_time = localtime ( &temp );
 
   char buffer[15];
   GRect bounds = layer_get_bounds ( s_layer_date );
+  graphics_context_set_stroke_color ( ctx, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ) );
 
   switch ( s_conf_date_format ) {
     case 1:
@@ -384,9 +383,11 @@ static void update_proc_layer_date ( Layer *layer, GContext *ctx ) {
 }
 
 static void update_proc_layer_battery ( Layer * layer, GContext * ctx ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: update_proc_layer_battery" );
   GRect bounds = layer_get_bounds ( layer );
   BatteryChargeState battery = battery_state_service_peek ( );
+  
+  graphics_context_set_stroke_color ( ctx, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ) );
+  graphics_context_set_fill_color ( ctx, gcolor_legible_over ( GColorFromHEX ( s_conf_background ) ) );
 
   int dots       = battery.charge_percent / 10;
   int space      = LAYER_HEIGHT_BATTERY;
@@ -416,14 +417,23 @@ static void handler_inbox_success ( DictionaryIterator * iterator, void * contex
   Tuple * tuple_appkBackground = dict_find ( iterator, appkBackground );
 
   if ( tuple_appkReady ) {
-    APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success PebbleKit JS Ready event recceived ");
     s_conf_ready = true;
+
+    int result = 0;
+    int value  = 1;
+
+    DictionaryIterator *request;
+    app_message_outbox_begin ( &request );
+    dict_write_int ( request, 101, &value, sizeof(int), false );
+    result = app_message_outbox_send ( );
+
+    APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success PebbleKit JS Ready event recceived, weather requested. %d", result);
   }
 
   if ( tuple_appkWeatherIcon /* More weather params */ ) {
-    if ( s_conf_weather_icon != tuple_appkWeatherIcon->value->uint8 ) {
-      s_conf_weather_icon = tuple_appkWeatherIcon->value->uint8;
-      APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon is %d", s_conf_weather_icon );
+    if ( s_conf_weather_icon != tuple_appkWeatherIcon->value->uint16 ) {
+      s_conf_weather_icon = tuple_appkWeatherIcon->value->uint16;
+      APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon is now %d", s_conf_weather_icon );
       update_proc_layer_weather ( NULL, NULL );
     } else {
       APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather_icon hasn't changed' %d", s_conf_weather_icon );
@@ -439,7 +449,7 @@ static void handler_inbox_success ( DictionaryIterator * iterator, void * contex
     s_conf_date_format = tuple_appkDateFormat->value->uint8 - 48;
     s_conf_hour_format = tuple_appkHourFormat->value->uint8 - 48;
     s_conf_battery     = tuple_appkBattery->value->uint8;
-    s_conf_background  = tuple_appkBattery->value->int32;
+    s_conf_background  = (int)tuple_appkBackground->value->int32;
 
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeather      : %d", s_conf_weather );
     APP_LOG ( APP_LOG_LEVEL_INFO, "handler_inbox_success appkWeatherPeriod: %d", s_conf_weather_period );
@@ -465,7 +475,6 @@ static void handler_outbox_failed   ( DictionaryIterator * iterator, AppMessageR
 }
 
 static void init ( void ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: init" );
   window = window_create ( );
   window_set_window_handlers ( window, ( WindowHandlers ) {
     .load      = window_load,
@@ -484,16 +493,11 @@ static void init ( void ) {
 }
 
 static void deinit ( void ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: deinit" );
   window_destroy ( window );
 }
 
 int main ( void ) {
-  APP_LOG ( APP_LOG_LEVEL_INFO, "on: main" );
   init ( );
-
-  APP_LOG ( APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window );
-
   app_event_loop ( );
   deinit ( );
 }

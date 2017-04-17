@@ -7,7 +7,7 @@ Features:
   * Optional Weather Icon
   * Optional Date in different formats
   * Time in various formats, 12 hours, 24 hours, 24 hours binary and 24 hours BCD (My favourive)
-  * Optional battery dots
+  * Optional battery dots ( one dot per each 10% of battery )
   * Offline configuration page (Thanks to Clay)
 
 Please report any bug or error. Also any suggestion will be welcome.

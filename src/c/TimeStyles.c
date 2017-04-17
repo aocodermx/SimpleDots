@@ -62,11 +62,11 @@ void draw_time_style_binary ( GContext * ctx, GRect bounds, struct tm * tick_tim
   int hours = tick_time->tm_hour;
   int mins  = tick_time->tm_min;
 
-  int hours_width  = bounds.size.w / 5;
+  int hours_width  = bounds.size.w / 6;
   int mins_width   = bounds.size.w / 6;
   int digit_height = bounds.size.h / 2;
 
-  for ( uint i = 5; i > 0; i-- ) {
+  for ( uint i = 6; i > 0; i-- ) {
     draw_digit_binary ( ctx, GRect ( bounds.origin.x + hours_width * (i - 1), bounds.origin.y, hours_width, digit_height ), hours%2 );
     hours /= 2;
   }

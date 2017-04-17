@@ -19,97 +19,97 @@
           "file": "menu_icon.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "DISCONNECT",
           "file": "disconnection.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W010",
           "file": "weather/w010.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W011",
           "file": "weather/w011.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W020",
           "file": "weather/w020.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W021",
           "file": "weather/w021.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W030",
           "file": "weather/w030.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W031",
           "file": "weather/w031.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W040",
           "file": "weather/w040.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W041",
           "file": "weather/w041.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W090",
           "file": "weather/w090.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W091",
           "file": "weather/w091.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W100",
           "file": "weather/w100.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W101",
           "file": "weather/w101.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W110",
           "file": "weather/w110.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W111",
           "file": "weather/w111.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W130",
           "file": "weather/w130.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W131",
           "file": "weather/w131.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W500",
           "file": "weather/w500.svg.png"
         },
         {
-          "type": "png",
+          "type": "pbi8",
           "name": "W501",
           "file": "weather/w501.svg.png"
         }

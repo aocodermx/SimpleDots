@@ -112,10 +112,14 @@ function sendWeatherBack ( ) {
 
     Pebble.sendAppMessage( dict, function ( ) {
       console.log ( 'Icon sent successfully.' + JSON.stringify ( dict ) );
-    }, function () {
+    }, function ( ) {
       console.log ( 'Icon failed.' + JSON.stringify ( dict ) );
-    });
+    } );
   } else {
-    console.log ( 'Something went wrong ' + this.status );
+    Pebble.sendAppMessage( { 'appkWeather_icon': 0 }, function ( ) {
+      console.log ( 'Failed to get Weather from webservice', this.status );
+    }, function ( ) {
+      console.log ( 'Failed to get Weather from webservice and to report to application' );
+    } );
   }
 }
